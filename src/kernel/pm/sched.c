@@ -22,6 +22,7 @@
 #include <nanvix/const.h>
 #include <nanvix/hal.h>
 #include <nanvix/pm.h>
+#include <nanvix/mm.h>
 #include <signal.h>
 
 /**
@@ -116,5 +117,6 @@ PUBLIC void yield(void)
 	next->priority = PRIO_USER;
 	next->state = PROC_RUNNING;
 	next->counter = PROC_QUANTUM;
-	switch_to(next);
+	switch_to(next);	
+	aging(); /* call memory manager's aging procedure after context switch */
 }
