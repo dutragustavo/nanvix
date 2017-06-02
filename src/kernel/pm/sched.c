@@ -22,6 +22,7 @@
 #include <nanvix/const.h>
 #include <nanvix/hal.h>
 #include <nanvix/pm.h>
+#include <nanvix/klib.h>
 #include <signal.h>
 
 /**
@@ -67,6 +68,9 @@ PUBLIC void yield(void)
 	struct process *p;    /* Working process.     */
 	struct process *next; /* Next process to run. */
 
+	int kernel_tickets = 0;
+	int user_tickets   = 0;
+
 	/* Re-schedule process for execution. */
 	if (curr_proc->state == PROC_RUNNING)
 		sched(curr_proc);
@@ -84,36 +88,61 @@ PUBLIC void yield(void)
 		/* Alarm has expired. */
 		if ((p->alarm) && (p->alarm < ticks))
 			p->alarm = 0, sndsig(p, SIGALRM);
+
+		if(p->state == PROC_READY)
+		{
+			if(p->priority != PRIO_USER)
+				kernel_tickets += p->priority;
+			else
+				user_tickets += ( p->priority - p->nice );
+		}
+	}
+
+	//Função de decisão de qual processo será escalonado
+	int winner = 0;
+	if(kernel_tickets || user_tickets)
+	{
+		if(kernel_tickets)
+			winner = rand() % kernel_tickets;
+		else
+			winner = rand() % user_tickets;
 	}
 
 	/* Choose a process to run next. */
 	next = IDLE;
+	int counter = 0; 
 	for (p = FIRST_PROC; p <= LAST_PROC; p++)
 	{
 		/* Skip non-ready process. */
 		if (p->state != PROC_READY)
 			continue;
 		
-		/*
-		 * Process with higher
-		 * waiting time found.
-		 */
-		if (p->counter > next->counter)
+
+		if(kernel_tickets)
 		{
-			next->counter++;
-			next = p;
+			if(p->priority != PRIO_USER)
+				counter += p->priority;
+			else
+				continue;
+
+			if (counter >= winner)
+			{
+				next = p;
+				break;
+			}
 		}
-			
-		/*
-		 * Increment waiting
-		 * time of process.
-		 */
 		else
-			p->counter++;
+		{
+			counter +=  p->priority - p->nice;
+			if (counter >= winner)
+			{
+				next = p;
+				break;
+			}
+		}
 	}
 	
 	/* Switch to next process. */
-	next->priority = PRIO_USER;
 	next->state = PROC_RUNNING;
 	next->counter = PROC_QUANTUM;
 	switch_to(next);

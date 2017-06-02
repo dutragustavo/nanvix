@@ -318,7 +318,7 @@ static int sched_test2(void)
 			else
 			{	
 				nice(-2*NZERO);
-				pause();
+				work_io();
 				_exit(EXIT_SUCCESS);
 			}
 		}
@@ -331,6 +331,7 @@ static int sched_test2(void)
 			
 		else
 		{	
+			ps();
 			kill(pid[i], SIGCONT);
 			wait(NULL);
 		}
