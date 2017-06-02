@@ -328,10 +328,26 @@ PRIVATE int allocf(void)
 	
 found:		
 
-	frames[i].age = ticks;
 	frames[i].count = 1;
 	
 	return (i);
+}
+
+PUBLIC void aging(void)
+{
+	struct pte *pg;
+	int i = 0;
+	for (; i < NR_FRAMES; i++)
+	{
+		if(frames[i].owner != curr_proc->pid)
+			continue;
+
+		frames[i].age = frames[i].age >> 1;
+		pg = getpte(curr_proc, frames[i].addr);
+
+		if(pg->accessed)
+			frames[i].age |= 0x80000000; //insert 1 on the most significant bit		
+	}
 }
 
 /**

@@ -21,6 +21,9 @@
 #include <nanvix/hal.h>
 #include <nanvix/klib.h>
 #include <nanvix/pm.h>
+#include <nanvix/mm.h>
+
+#define AGING_INTERVAL 30 //call memory manager's aging algorithm every X clock interrupts
 
 /* Clock ticks since system initialization. */
 PUBLIC unsigned ticks = 0;
@@ -35,6 +38,11 @@ PRIVATE void do_clock()
 {
 	ticks++;
 	
+	if(ticks % AGING_INTERVAL == 0)
+	{
+		aging();
+	}
+
 	if (KERNEL_RUNNING(curr_proc))
 	{
 		curr_proc->ktime++;

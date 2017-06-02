@@ -63,6 +63,7 @@
 	EXTERN int crtpgdir(struct process *);
 	EXTERN int pfault(addr_t);
 	EXTERN int vfault(addr_t);
+	EXTERN void aging();
 	EXTERN void dstrypgdir(struct process *);
 	EXTERN void putkpg(void *);
 	EXTERN void mm_init(void);
