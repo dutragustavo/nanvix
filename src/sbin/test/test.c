@@ -49,9 +49,8 @@ static unsigned flags = VERBOSE | FULL;
  * 
  * @returns Zero if passed on test, and non-zero otherwise.
  */
-static int swap_test(void)
+static int swap_test(int N)
 {
-	#define N 1280
 	int *a, *b, *c;
 	clock_t t0, t1;
 	struct tms timing;
@@ -59,17 +58,36 @@ static int swap_test(void)
 	/* Allocate matrices. */
 	if ((a = malloc(N*N*sizeof(int))) == NULL)
 		goto error0;
+
+	printf("Matriz 'a' alocada\n");
+	fflush(stdout);
+
+
 	if ((b = malloc(N*N*sizeof(int))) == NULL)
 		goto error1;
+
+	printf("Matriz 'b' alocada\n");
+	fflush(stdout);
+
 	if ((c = malloc(N*N*sizeof(int))) == NULL)
 		goto error2;
+
+	printf("Matriz 'c' alocada\n");
+	fflush(stdout);
 		
 	t0 = times(&timing);
 	
 	/* Initialize matrices. */
 	for (int i = 0; i < N*N; i++)
 	{
-		a[i] = 1;
+		//when we have i=1280000 we start having page faults 
+		if(i % 100000 == 0)
+		{
+			printf("I: %d", i);
+			fflush(stdout);
+		}
+
+		a[i] = 1;		
 		b[i] = 1;
 		c[i] = 0;
 	}
@@ -604,7 +622,7 @@ int main(int argc, char **argv)
 		{
 			printf("Swapping Test\n");
 			printf("  Result:             [%s]\n",
-				(!swap_test()) ? "PASSED" : "FAILED");
+				(!swap_test(1280)) ? "PASSED" : "FAILED");
 		}
 		
 		/* Scheduling test. */
@@ -636,9 +654,9 @@ int main(int argc, char **argv)
 		}
 	
 	
-		/* Wrong usage. */
-		else
-			usage();
+		// /* Wrong usage. */
+		// else
+		// 	usage();
 	}
 	
 	return (EXIT_SUCCESS);
