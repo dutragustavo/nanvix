@@ -117,6 +117,5 @@ PUBLIC void yield(void)
 	next->priority = PRIO_USER;
 	next->state = PROC_RUNNING;
 	next->counter = PROC_QUANTUM;
-	switch_to(next);	
-	aging(); /* call memory manager's aging procedure after context switch */
+	switch_to(next);
 }
