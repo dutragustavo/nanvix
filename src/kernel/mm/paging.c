@@ -284,6 +284,8 @@ PRIVATE struct
 	addr_t addr;    /**< Address of the page. */
 } frames[NR_FRAMES] = {{0, 0, 0, 0},  };
 
+#define MS_BIT_ONE 0x80000000
+
 /**
  * @brief Allocates a page frame.
  * 
@@ -314,7 +316,9 @@ PRIVATE int allocf(void)
 			
 			/* Oldest page found. */
 			if ((oldest < 0) || (OLDEST(i, oldest)))
+			{
 				oldest = i;
+			}
 		}
 	}
 	
@@ -329,6 +333,7 @@ PRIVATE int allocf(void)
 found:		
 
 	frames[i].count = 1;
+	frames[i].age = MS_BIT_ONE;
 	
 	return (i);
 }
@@ -346,7 +351,7 @@ PUBLIC void aging(void)
 		pg = getpte(curr_proc, frames[i].addr);
 
 		if(pg->accessed)
-			frames[i].age |= 0x80000000; //insert 1 on the most significant bit		
+			frames[i].age |= MS_BIT_ONE; //insert 1 on the most significant bit		
 	}
 }
 
