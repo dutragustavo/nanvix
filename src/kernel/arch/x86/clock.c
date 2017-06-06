@@ -23,7 +23,7 @@
 #include <nanvix/pm.h>
 #include <nanvix/mm.h>
 
-#define AGING_INTERVAL 30 //call memory manager's aging algorithm every X clock interrupts
+#define AGING_INTERVAL 300 //call memory manager's aging algorithm every X clock interrupts
 
 /* Clock ticks since system initialization. */
 PUBLIC unsigned ticks = 0;
