@@ -334,7 +334,7 @@ found:
 
 	frames[i].count = 1;
 	frames[i].age = MS_BIT_ONE;
-	
+		
 	return (i);
 }
 
@@ -351,7 +351,10 @@ PUBLIC void aging(void)
 		pg = getpte(curr_proc, frames[i].addr);
 
 		if(pg->accessed)
+		{
 			frames[i].age |= MS_BIT_ONE; //insert 1 on the most significant bit		
+			pg->accessed = 0;
+		}
 	}
 }
 
