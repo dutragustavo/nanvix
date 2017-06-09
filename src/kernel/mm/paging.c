@@ -285,6 +285,7 @@ PRIVATE struct
 } frames[NR_FRAMES] = {{0, 0, 0, 0},  };
 
 #define MS_BIT_ONE 0x80000000
+#define NEWER_AGE  0Xffffffff
 
 /**
  * @brief Allocates a page frame.
@@ -333,7 +334,7 @@ PRIVATE int allocf(void)
 found:		
 
 	frames[i].count = 1;
-	frames[i].age = MS_BIT_ONE;
+	frames[i].age = NEWER_AGE;
 		
 	return (i);
 }
