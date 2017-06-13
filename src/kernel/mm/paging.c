@@ -285,7 +285,7 @@ PRIVATE struct
 } frames[NR_FRAMES] = {{0, 0, 0, 0},  };
 
 #define MS_BIT_ONE 0x80000000
-#define NEWER_AGE  0Xffffffff
+#define NEWER_AGE  0x80000000
 
 /**
  * @brief Allocates a page frame.
