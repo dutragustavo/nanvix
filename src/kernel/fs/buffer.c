@@ -313,6 +313,17 @@ PUBLIC struct buffer *bread(dev_t dev, block_t num)
 	if (buf->flags & BUFFER_VALID)
 		return (buf);
 
+	struct buffer *aux_buf; 	
+	int i = 1;
+	do //search for the next buffer on disk
+	{
+		aux_buf = getblk(dev, num + i);
+		i++;
+	}
+	while(aux_buf->flags & BUFFER_VALID);
+
+	aux_buf->flags |= ~BUFFER_SYNC;
+	bdev_readblk(aux_buf); //sched async read 
 	bdev_readblk(buf);
 	
 	/* Update buffer flags. */
