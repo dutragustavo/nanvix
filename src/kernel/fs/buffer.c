@@ -313,12 +313,11 @@ PUBLIC struct buffer *bread(dev_t dev, block_t num)
 	if (buf->flags & BUFFER_VALID)
 		return (buf);
 
-	struct buffer *aux_buf; 	
-	int i = 1;
+	struct buffer *aux_buf = buf; 	
 	do //search for the next buffer on disk
 	{
-		aux_buf = getblk(dev, num + i);
-		i++;
+		aux_buf = aux_buf->hash_next;
+		aux_buf = getblk(dev, aux_buf->num);
 	}
 	while(aux_buf->flags & BUFFER_VALID);
 
