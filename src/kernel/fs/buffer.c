@@ -313,6 +313,25 @@ PUBLIC struct buffer *bread(dev_t dev, block_t num)
 	if (buf->flags & BUFFER_VALID)
 		return (buf);
 
+	bdev_readblk(buf);
+	
+	/* Update buffer flags. */
+	buf->flags |= BUFFER_VALID;
+	buf->flags &= ~BUFFER_DIRTY;
+	
+	return (buf);
+}
+#if 0
+PUBLIC struct buffer *not_bread(dev_t dev, block_t num)
+{
+	struct buffer *buf;
+	
+	buf = getblk(dev, num);
+	
+	/* Valid buffer? */
+	if (buf->flags & BUFFER_VALID)
+		return (buf);
+
 	struct buffer *aux_buf = buf; 	
 	do //search for the next buffer on disk
 	{
@@ -331,7 +350,7 @@ PUBLIC struct buffer *bread(dev_t dev, block_t num)
 	
 	return (buf);
 }
-
+#endif
 /**
  * @brief Writes a block buffer to the underlying device.
  * 

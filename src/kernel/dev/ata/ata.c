@@ -658,8 +658,7 @@ PRIVATE int ata_readblk(unsigned minor, buffer_t buf)
 	if (!(dev->flags & ATADEV_VALID))
 		return (-EINVAL);
 	
-	unsigned flags = REQ_BUF | (buffer_is_sync(buf) ? REQ_SYNC : 0); 
-	ata_sched_buffered(minor, buf, flags);
+	ata_sched_buffered(minor, buf, REQ_BUF | REQ_SYNC);
 	
 	return (0);
 }
