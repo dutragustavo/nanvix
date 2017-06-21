@@ -287,7 +287,7 @@ PUBLIC ssize_t file_read(struct inode *i, void *buf, size_t n, off_t off)
 	size_t chunk;        /* Data chunk size.      */
 	block_t blk;         /* Working block number. */
 	struct buffer *bbuf; /* Working block buffer. */
-	// block_t async_block1;
+	block_t async_block1;
 	// block_t async_block2; 
 
 	p = buf;
@@ -305,11 +305,11 @@ PUBLIC ssize_t file_read(struct inode *i, void *buf, size_t n, off_t off)
 
 		bbuf = bread(i->dev, blk);
 
-		// async_block1 = block_map(i, offset + BLOCK_SIZE * index, 0);
-		// if (async_block1 != BLOCK_NULL)
-		// 	abread(i->dev, async_block1);
+		async_block1 = block_map(i, off + BLOCK_SIZE, 0);
+		if (async_block1 != BLOCK_NULL)
+			abread(i->dev, async_block1);
 
-		// async_block2 = block_map(i, offset + (BLOCK_SIZE * index), 0);
+		// async_block2 = block_map(i, off + (BLOCK_SIZE * 2), 0);
 		// if (async_block2 != BLOCK_NULL)
 		// 	abread(i->dev, async_block2);
 

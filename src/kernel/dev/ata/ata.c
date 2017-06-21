@@ -938,6 +938,13 @@ PRIVATE void ata_handler(int atadevid)
 			buf[i] = word & 0xff;
 			buf[i + 1] = (word >> 8) & 0xff;
 		}
+		
+		/* update buffer flags on async read*/ 
+		if( req->flags & ~REQ_SYNC )
+		{
+			buffer_valid(req->u.buffered.buf, 1);		
+			// brelse(req->u.buffered.buf);			
+		}
 	}
 	
 	/* Process next operation. */

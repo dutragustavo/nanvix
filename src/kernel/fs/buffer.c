@@ -327,16 +327,15 @@ PUBLIC void abread(dev_t dev, block_t num)
 	struct buffer *buf;
 
 	buf = getblk(dev, num);
-	
-	/* Valid buffer? will be read soon */
+
+	/* Buffer already read */
 	if (buf->flags & BUFFER_VALID)
+	{
+		brelse(buf);
 		return;
+	}
 
 	bdev_readblk(buf, 0);
-	
-	/* Update buffer flags. */
-	buf->flags |= BUFFER_VALID;
-	buf->flags &= ~BUFFER_DIRTY;
 }
 
 /**
@@ -424,6 +423,11 @@ PUBLIC inline void buffer_dirty(struct buffer *buf, int set)
 	buf->flags = (set) ? buf->flags | BUFFER_DIRTY : buf->flags & ~BUFFER_DIRTY;
 }
 
+PUBLIC inline void buffer_valid(struct buffer *buf, int set)
+{
+	buf->flags = (set) ? buf->flags | BUFFER_VALID : buf->flags & ~BUFFER_VALID;
+}
+
 /**
  * @brief Returns a pointer to the data in a buffer.
  * 
@@ -488,11 +492,6 @@ PUBLIC inline block_t buffer_num(const struct buffer *buf)
 PUBLIC inline int buffer_is_sync(const struct buffer *buf)
 {
 	return (buf->flags & BUFFER_SYNC);
-}
-
-PUBLIC inline int buffer_is_sync_read(const struct buffer *buf)
-{
-	return (buf->flags & BUFFER_SYNC_READ);
 }
 
 /**
