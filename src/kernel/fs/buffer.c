@@ -313,7 +313,7 @@ PUBLIC struct buffer *bread(dev_t dev, block_t num)
 	if (buf->flags & BUFFER_VALID)
 		return (buf);
 
-	bdev_readblk(buf);
+	bdev_readblk(buf, 1);
 	
 	/* Update buffer flags. */
 	buf->flags |= BUFFER_VALID;
@@ -321,36 +321,24 @@ PUBLIC struct buffer *bread(dev_t dev, block_t num)
 	
 	return (buf);
 }
-#if 0
-PUBLIC struct buffer *not_bread(dev_t dev, block_t num)
+
+PUBLIC void abread(dev_t dev, block_t num)
 {
 	struct buffer *buf;
-	
+
 	buf = getblk(dev, num);
 	
-	/* Valid buffer? */
+	/* Valid buffer? will be read soon */
 	if (buf->flags & BUFFER_VALID)
-		return (buf);
+		return;
 
-	struct buffer *aux_buf = buf; 	
-	do //search for the next buffer on disk
-	{
-		aux_buf = aux_buf->hash_next;
-		aux_buf = getblk(dev, aux_buf->num);
-	}
-	while(aux_buf->flags & BUFFER_VALID);
-
-	aux_buf->flags |= ~BUFFER_SYNC;
-	bdev_readblk(aux_buf); //sched async read 
-	bdev_readblk(buf);
+	bdev_readblk(buf, 0);
 	
 	/* Update buffer flags. */
 	buf->flags |= BUFFER_VALID;
 	buf->flags &= ~BUFFER_DIRTY;
-	
-	return (buf);
 }
-#endif
+
 /**
  * @brief Writes a block buffer to the underlying device.
  * 
@@ -500,6 +488,11 @@ PUBLIC inline block_t buffer_num(const struct buffer *buf)
 PUBLIC inline int buffer_is_sync(const struct buffer *buf)
 {
 	return (buf->flags & BUFFER_SYNC);
+}
+
+PUBLIC inline int buffer_is_sync_read(const struct buffer *buf)
+{
+	return (buf->flags & BUFFER_SYNC_READ);
 }
 
 /**
