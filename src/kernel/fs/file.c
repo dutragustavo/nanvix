@@ -306,8 +306,7 @@ PUBLIC ssize_t file_read(struct inode *i, void *buf, size_t n, off_t off)
 
 		async_block1 = block_map(i, off + BLOCK_SIZE, 0);
 		if (async_block1 != BLOCK_NULL)
-			async_block1++;
-			// abread(i->dev, async_block1);
+			abread(i->dev, async_block1);
 
 		blkoff = off % BLOCK_SIZE;
 		
