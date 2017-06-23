@@ -146,16 +146,24 @@ static int io_test(void)
 		exit(EXIT_FAILURE);
 	
 	/* Open hdd. */
+	printf("Before Open\n");
 	fd = open("/dev/hdd", O_RDONLY);
+	printf("After Open\n");
 	if (fd < 0)
 		exit(EXIT_FAILURE);
 	
 	t0 = times(&timing);
-	
+
+	printf("MAXMEM %d , FD: %d\n", MEMORY_SIZE - 10, fd);	
 	/* Read hdd. */
-	if (read(fd, buffer, MEMORY_SIZE) != MEMORY_SIZE)
+	int k;
+	if ((k = read(fd, buffer, MEMORY_SIZE)) != MEMORY_SIZE)
+	{
+		printf("return = %d\n", k);
+		printf("Read failure\n");
 		exit(EXIT_FAILURE);
-	
+	}
+	printf("Read finished\n");
 	t1 = times(&timing);
 	
 	/* House keeping. */

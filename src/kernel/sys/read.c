@@ -37,6 +37,8 @@ PUBLIC ssize_t sys_read(int fd, void *buf, size_t n)
 	struct inode *i; /* Inode.               */
 	ssize_t count;   /* Bytes actually read. */
 	
+	// kprintf("sys_read called!\n");
+
 	/* Invalid file descriptor. */
 	if ((fd < 0) || (fd >= OPEN_MAX) || ((f = curr_proc->ofiles[fd]) == NULL))
 		return (-EBADF);
